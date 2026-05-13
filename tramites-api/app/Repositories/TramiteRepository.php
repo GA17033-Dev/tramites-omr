@@ -14,12 +14,14 @@ class TramiteRepository
         $this->tramite = $tramite;
     }
 
-    public function paginate(?int $institucionId = null, int $perPage = 10): LengthAwarePaginator
+    
+    public function paginate(?int $institucionId = null, ?string $nombre = null, int $perPage = 10): LengthAwarePaginator
     {
         return $this->tramite
             ->newQuery()
             ->with('institucion')
             ->when($institucionId, fn ($q) => $q->where('institucion_id', $institucionId))
+            ->when($nombre, fn ($q, $val) => $q->where('nombre', 'like', '%' . $val . '%'))
             ->orderByDesc('id')
             ->paginate($perPage)
             ->appends(request()->query());

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTramiteRequest extends FormRequest
 {
@@ -14,11 +15,14 @@ class StoreTramiteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'codigo'        => 'required|string|max:50|unique:tramites,codigo',
-            'nombre'        => 'required|string|max:255',
-            'descripcion'   => 'required|string',
-            'institucion_id'=> 'required|exists:instituciones,id',
-            'dias_habiles'  => 'required|integer|min:1',
+            'codigo'         => 'required|string|max:50|unique:tramites,codigo',
+            'nombre'         => 'required|string|max:255',
+            'descripcion'    => 'required|string',
+            'institucion_id' => [
+                'required',
+                Rule::exists('instituciones', 'id')->where(fn ($q) => $q->where('activo', true)),
+            ],
+            'dias_habiles'   => 'required|integer|min:1',
         ];
     }
 
@@ -30,12 +34,12 @@ class StoreTramiteRequest extends FormRequest
             'nombre.required'         => 'El nombre es obligatorio',
             'descripcion.required'    => 'La descripción es obligatoria',
             'institucion_id.required' => 'La institución es obligatoria',
-            'institucion_id.exists'   => 'La institución no existe',
+            'institucion_id.exists'   => 'La institución no existe o está inactiva',
             'dias_habiles.required'   => 'Los días hábiles son obligatorios',
+            'dias_habiles.integer'    => 'Los días hábiles deben ser un número entero',
             'dias_habiles.min'        => 'Los días hábiles deben ser mayor a 0',
         ];
     }
-
 
     public function getData(): array
     {
