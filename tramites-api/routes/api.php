@@ -1,20 +1,18 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InstitucionController;
 use App\Http\Controllers\TramiteController;
+use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
 
+
+// Instituciones
 Route::get('/instituciones', [InstitucionController::class, 'index']);
-Route::get('/tramites', [TramiteController::class, 'index']);
+Route::post('/instituciones', [InstitucionController::class, 'store']);
+
+// Trámites
+Route::get('/tramites',        [TramiteController::class, 'index']);
+Route::post('/tramites',       [TramiteController::class, 'store']);
+Route::get('/tramites/{tramite}',    [TramiteController::class, 'show'])->whereNumber('tramite');
+Route::put('/tramites/{tramite}',    [TramiteController::class, 'update'])->whereNumber('tramite');
+Route::delete('/tramites/{tramite}', [TramiteController::class, 'destroy'])->whereNumber('tramite');

@@ -17,11 +17,12 @@ class Institucion extends Model
         'activo',
     ];
 
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
     public function tramites()
     {
         return $this->hasMany(Tramite::class, 'institucion_id');
     }
-
-
-
 }

@@ -20,10 +20,14 @@ class Tramite extends Model
         'activo',
     ];
 
+    protected $casts = [
+        'institucion_id' => 'integer',
+        'dias_habiles'   => 'integer',
+        'activo'         => 'boolean',
+    ];
 
     public function institucion()
     {
         return $this->belongsTo(Institucion::class, 'institucion_id');
     }
-    
 }
