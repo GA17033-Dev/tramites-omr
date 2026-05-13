@@ -15,7 +15,7 @@ class TramiteService
         $this->tramiteRepository = $tramiteRepository;
     }
 
-    
+
     public function paginate(?int $institucionId = null, ?string $nombre = null, int $perPage = 10): AnonymousResourceCollection
     {
         $paginator = $this->tramiteRepository->paginate($institucionId, $nombre, $perPage);
@@ -46,19 +46,9 @@ class TramiteService
         return $tramite ? new TramiteResource($tramite->fresh('institucion')) : null;
     }
 
-    /**
-     * Soft delete por requerimiento del enunciado: marca activo=false.
-     */
-    public function deactivate(int $id): ?TramiteResource
+
+    public function delete(int $id): bool
     {
-        $tramite = $this->tramiteRepository->findById($id);
-
-        if (! $tramite) {
-            return null;
-        }
-
-        $tramite->update(['activo' => false]);
-
-        return new TramiteResource($tramite->fresh('institucion'));
+        return $this->tramiteRepository->delete($id);
     }
 }

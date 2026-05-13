@@ -53,8 +53,8 @@ class InstitucionService
         return $institucion ? new InstitucionResource($institucion) : null;
     }
 
-    public function changeStatus(int $id, bool $estado): bool
+    public function delete(int $id): bool
     {
-        return $this->institucionRepository->changeStatus($id, $estado);
+        return $this->institucionRepository->delete($id);
     }
 }

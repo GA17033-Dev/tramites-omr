@@ -18,7 +18,7 @@ class InstitucionRepository
     {
         return $this->institucion
             ->newQuery()
-            ->when($soloActivas, fn ($q) => $q->where('activo', true))
+            ->when($soloActivas, fn($q) => $q->where('activo', true))
             ->orderBy('nombre')
             ->get();
     }
@@ -36,6 +36,13 @@ class InstitucionRepository
             ->newQuery()
             ->find($id);
     }
+    public function findWithCondition(int $id, array $condition): ?Institucion
+    {
+        return $this->institucion
+            ->newQuery()
+            ->where($condition)
+            ->find($id);
+    }
 
     public function update(int $id, array $data): ?Institucion
     {
@@ -48,12 +55,12 @@ class InstitucionRepository
         return $institucion;
     }
 
-    public function changeStatus(int $id, bool $estado): bool
+    public function delete(int $id): bool
     {
-        $institucion = $this->find($id);
+        $institucion = $this->findWithCondition($id, ['activo' => true]);
 
         if ($institucion) {
-            $institucion->update(['activo' => $estado]);
+            $institucion->update(['activo' => false]);
             return true;
         }
 

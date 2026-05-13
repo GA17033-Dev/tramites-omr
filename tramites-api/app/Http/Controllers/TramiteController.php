@@ -62,7 +62,7 @@ class TramiteController extends Controller
    
     public function destroy(int $id): JsonResponse
     {
-        $resource = $this->tramiteService->deactivate($id);
+        $resource = $this->tramiteService->delete($id);
 
         return $resource
             ? Http::respuesta(Http::RET_OK, $resource)

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class StoreInstitucionRequest extends FormRequest
 {
@@ -32,6 +34,16 @@ class StoreInstitucionRequest extends FormRequest
     public function getData(): array
     {
         return $this->only(['nombre', 'tipo']);
+    }
+
+     protected function failedValidation(Validator $validator)
+    {
+        $message = collect($validator->errors()->all())->implode(' ');
+        abort(response()->json([
+            'success' => false,
+            'message' => $message,
+            'errors'  => $validator->errors(),
+        ], Response::HTTP_BAD_REQUEST));
     }
 
     

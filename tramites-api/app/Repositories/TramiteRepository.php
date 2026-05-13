@@ -14,14 +14,14 @@ class TramiteRepository
         $this->tramite = $tramite;
     }
 
-    
+
     public function paginate(?int $institucionId = null, ?string $nombre = null, int $perPage = 10): LengthAwarePaginator
     {
         return $this->tramite
             ->newQuery()
             ->with('institucion')
-            ->when($institucionId, fn ($q) => $q->where('institucion_id', $institucionId))
-            ->when($nombre, fn ($q, $val) => $q->where('nombre', 'like', '%' . $val . '%'))
+            ->when($institucionId, fn($q) => $q->where('institucion_id', $institucionId))
+            ->when($nombre, fn($q, $val) => $q->where('nombre', 'like', '%' . $val . '%'))
             ->orderByDesc('id')
             ->paginate($perPage)
             ->appends(request()->query());
@@ -31,6 +31,14 @@ class TramiteRepository
     {
         return $this->tramite
             ->newQuery()
+            ->with('institucion')
+            ->find($id);
+    }
+
+    public function findWithCondition(int $id, array $condition): ?Tramite
+    {
+        return $this->tramite->newQuery()
+            ->where($condition)
             ->with('institucion')
             ->find($id);
     }
@@ -59,6 +67,18 @@ class TramiteRepository
 
         if ($tramite) {
             $tramite->update(['activo' => $estado]);
+            return true;
+        }
+
+        return false;
+    }
+
+    public function delete(int $id): bool
+    {
+        $tramite = $this->findWithCondition($id, ['activo' => true]);
+
+        if ($tramite) {
+            $tramite->update(['activo' => false]);
             return true;
         }
 
