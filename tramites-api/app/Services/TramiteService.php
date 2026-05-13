@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Tramite;
+use App\Http\Resources\TramiteResource;
 use App\Repositories\TramiteRepository;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TramiteService
 {
@@ -15,30 +15,48 @@ class TramiteService
         $this->tramiteRepository = $tramiteRepository;
     }
 
-    public function getAll(int $institucionId = null): Collection
+   
+    public function paginate(?int $institucionId = null, int $perPage = 10): AnonymousResourceCollection
     {
-        return $this->tramiteRepository->paginate($institucionId)->getCollection();
+        $paginator = $this->tramiteRepository->paginate($institucionId, $perPage);
+
+        return TramiteResource::collection($paginator);
     }
 
-    public function create(array $data): Tramite
+    public function create(array $data): TramiteResource
     {
-        return $this->tramiteRepository->create($data);
+        $data['activo'] = $data['activo'] ?? true;
+
+        $tramite = $this->tramiteRepository->create($data);
+
+        return new TramiteResource($tramite->load('institucion'));
     }
 
-    public function find(int $id): ?Tramite
+    public function find(int $id): ?TramiteResource
     {
-        return $this->tramiteRepository->findById($id);
+        $tramite = $this->tramiteRepository->findById($id);
+
+        return $tramite ? new TramiteResource($tramite) : null;
     }
 
-    public function update(int $id, array $data): ?Tramite
+    public function update(int $id, array $data): ?TramiteResource
     {
-        return $this->tramiteRepository->update($id, $data);
+        $tramite = $this->tramiteRepository->update($id, $data);
+
+        return $tramite ? new TramiteResource($tramite->fresh('institucion')) : null;
     }
 
-    public function changeStatus(int $id, bool $estado): bool
+   
+    public function deactivate(int $id): ?TramiteResource
     {
-        return $this->tramiteRepository->changeStatus($id, $estado);
-    }
+        $tramite = $this->tramiteRepository->findById($id);
 
+        if (! $tramite) {
+            return null;
+        }
+
+        $tramite->update(['activo' => false]);
+
+        return new TramiteResource($tramite->fresh('institucion'));
+    }
 }
-

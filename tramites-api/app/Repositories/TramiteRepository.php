@@ -14,13 +14,15 @@ class TramiteRepository
         $this->tramite = $tramite;
     }
 
-    public function paginate(int $institucionId = null): LengthAwarePaginator
+    public function paginate(?int $institucionId = null, int $perPage = 10): LengthAwarePaginator
     {
         return $this->tramite
             ->newQuery()
             ->with('institucion')
-            ->when($institucionId, fn($q) => $q->where('institucion_id', $institucionId))
-            ->paginate(10);
+            ->when($institucionId, fn ($q) => $q->where('institucion_id', $institucionId))
+            ->orderByDesc('id')
+            ->paginate($perPage)
+            ->appends(request()->query());
     }
 
     public function findById(int $id): ?Tramite
@@ -38,7 +40,7 @@ class TramiteRepository
             ->create($data);
     }
 
-     public function update(int $id, array $data): ?Tramite
+    public function update(int $id, array $data): ?Tramite
     {
         $tramite = $this->findById($id);
 
@@ -60,6 +62,4 @@ class TramiteRepository
 
         return false;
     }
-
-    
 }

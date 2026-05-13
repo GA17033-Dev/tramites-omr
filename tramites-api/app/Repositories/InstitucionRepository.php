@@ -14,10 +14,12 @@ class InstitucionRepository
         $this->institucion = $institucion;
     }
 
-    public function all(): Collection
+    public function all(bool $soloActivas = false): Collection
     {
         return $this->institucion
             ->newQuery()
+            ->when($soloActivas, fn ($q) => $q->where('activo', true))
+            ->orderBy('nombre')
             ->get();
     }
 

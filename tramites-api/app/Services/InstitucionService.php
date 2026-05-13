@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
+use App\Http\Resources\InstitucionResource;
 use App\Repositories\InstitucionRepository;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class InstitucionService
 {
@@ -14,27 +15,43 @@ class InstitucionService
         $this->institucionRepository = $institucionRepository;
     }
 
-    public function getAll(): Collection
+    
+    public function getAllActivas(): AnonymousResourceCollection
     {
-        return $this->institucionRepository->all();
+        $instituciones = $this->institucionRepository->all(true);
+
+        return InstitucionResource::collection($instituciones);
     }
 
-    public function create(array $data): \App\Models\Institucion
+    public function getAll(): AnonymousResourceCollection
     {
-        return $this->institucionRepository->create($data);
+        $instituciones = $this->institucionRepository->all(false);
+
+        return InstitucionResource::collection($instituciones);
     }
 
-    public function find(int $id): ?\App\Models\Institucion
+    public function create(array $data): InstitucionResource
     {
-        return $this->institucionRepository->find($id);
+        $data['activo'] = $data['activo'] ?? true;
+
+        $institucion = $this->institucionRepository->create($data);
+
+        return new InstitucionResource($institucion);
     }
 
-    public function update(int $id, array $data): ?\App\Models\Institucion
+    public function find(int $id): ?InstitucionResource
     {
-        return $this->institucionRepository->update($id, $data);
+        $institucion = $this->institucionRepository->find($id);
+
+        return $institucion ? new InstitucionResource($institucion) : null;
     }
 
+    public function update(int $id, array $data): ?InstitucionResource
+    {
+        $institucion = $this->institucionRepository->update($id, $data);
 
+        return $institucion ? new InstitucionResource($institucion) : null;
+    }
 
     public function changeStatus(int $id, bool $estado): bool
     {
