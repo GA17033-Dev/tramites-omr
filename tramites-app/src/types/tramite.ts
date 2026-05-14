@@ -9,6 +9,7 @@ export interface Tramite {
   dias_habiles: number;
   activo: boolean;
   institucion?: Institucion;
+  tipo: 'tramite';
 }
 
 export interface TramitePayload {
