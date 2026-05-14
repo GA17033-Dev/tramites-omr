@@ -37,5 +37,5 @@ npm run dev
 | Módulo       | Tiempo |
 |--------------|--------|
 | Backend      | ~6 h   |
-| Frontend     | ~x h   |
+| Frontend     | ~6.5 h |
 | README       | ~0.5 h | 
