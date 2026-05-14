@@ -5,6 +5,7 @@ import TramiteDetailModal from "@/components/TramiteDetailModal.vue";
 import tramitesService from "@/services/tramites.service";
 import institucionesService from "@/services/instituciones.service";
 import { useConfirm } from "@/composables/useConfirm";
+import { downloadCsv, toCsv } from "@/utils/csv";
 import type { Tramite } from "@/types/tramite";
 import type { Institucion } from "@/types/institucion";
 import type { PaginationMeta } from "@/types/api";
@@ -92,13 +93,58 @@ function ver(t: Tramite) {
   tramiteDetalle.value = t;
 }
 
+function exportarCsv() {
+  if (!tramites.value.length) return;
+  const csv = toCsv(tramites.value, [
+    { key: "codigo", label: "Código" },
+    { key: "nombre", label: "Nombre" },
+    {
+      key: "institucion",
+      label: "Institución",
+      format: (r) => r.institucion?.nombre ?? "",
+    },
+    {
+      key: "tipo",
+      label: "Tipo institución",
+      format: (r) => r.institucion?.tipo ?? "",
+    },
+    { key: "dias_habiles", label: "Días hábiles" },
+    {
+      key: "activo",
+      label: "Estado",
+      format: (r) => (r.activo ? "Activo" : "Inactivo"),
+    },
+    { key: "descripcion", label: "Descripción" },
+  ]);
+  downloadCsv(`tramites-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+}
 </script>
 
 <template>
   <section>
     <header class="flex flex-wrap items-center justify-between gap-3 mb-5">
       <div class="flex gap-2">
-        
+        <button
+          type="button"
+          @click="exportarCsv"
+          :disabled="!tramites.length"
+          class="inline-flex items-center gap-1.5 px-3 py-2 text-sm rounded border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"
+            />
+          </svg>
+          Exportar CSV
+        </button>
         <RouterLink
           to="/tramites/nuevo"
           class="inline-flex items-center gap-1 px-3 py-2 text-sm rounded bg-brand-500 text-white hover:bg-brand-600"
